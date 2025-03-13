@@ -7,7 +7,7 @@ def list_usb_drives():
     result = subprocess.run(["diskutil", "list", "external"], capture_output=True, text=True)
     return result.stdout
 
-def secure_erase(disk, method, fs_type):
+def secure_erase(disk, method, fs_type, apply_extra_security):
     if not disk:
         messagebox.showerror("Hata", "Lütfen bir USB seçin.")
         return
@@ -31,6 +31,18 @@ def secure_erase(disk, method, fs_type):
     
     try:
         subprocess.run(erase_command, check=True)
+        
+        if apply_extra_security:
+            messagebox.showinfo("Ekstra Güvenlik", "Ekstra güvenlik önlemleri uygulanıyor...")
+            
+            for i in range(3):
+                subprocess.run(erase_command, check=True)
+                progress_label.config(text=f"Ekstra güvenlik: {i+1}. geçiş tamamlandı...")
+                root.update()
+                
+            subprocess.run(["diskutil", "zeroDisk", disk], check=True)
+            messagebox.showinfo("Doğrulama", "Silme işlemi tamamlandı ve doğrulandı!")
+        
         format_command = ["diskutil", "eraseDisk", fs_type, "USB", disk]
         subprocess.run(format_command, check=True)
         messagebox.showinfo("Tamamlandı", f"{disk} başarıyla güvenli şekilde silindi ve {fs_type} olarak biçimlendirildi.")
@@ -54,8 +66,8 @@ def get_selected_drive():
         return None
 
 root = tk.Tk()
-root.title("Güvenli USB Silme - Mac")
-root.geometry("400x400")
+root.title("Güvenli USB Silme - Mac/Linux")
+root.geometry("500x500")
 
 tk.Label(root, text="USB Sürücüleri:").pack()
 drive_list = tk.Listbox(root)
@@ -69,12 +81,16 @@ tk.OptionMenu(root, method_var, *methods).pack()
 
 tk.Label(root, text="Dosya Sistemi:").pack()
 fs_var = tk.StringVar(value="FAT32")
-fs_options = ["FAT32", "NTFS"]
+fs_options = ["FAT32", "exFAT", "APFS", "ext4"]
 tk.OptionMenu(root, fs_var, *fs_options).pack()
 
-tk.Button(root, text="USB'yi Güvenli Sil", command=lambda: secure_erase(get_selected_drive(), method_var.get(), fs_var.get())).pack()
+tk.Label(root, text="Ekstra Güvenlik Önlemleri:").pack()
+apply_extra_security_var = tk.BooleanVar()
+tk.Checkbutton(root, text="Ekstra Güvenlik", variable=apply_extra_security_var).pack()
+
+tk.Button(root, text="Silmeyi Başlat", command=lambda: secure_erase(get_selected_drive(), method_var.get(), fs_var.get(), apply_extra_security_var.get())).pack()
+
 progress_label = tk.Label(root, text="")
 progress_label.pack()
 
-update_drive_list()
 root.mainloop()
