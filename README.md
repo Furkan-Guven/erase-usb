@@ -1,6 +1,6 @@
 # 🔥 USB Secure Erase Tool
 
-Bu proje, **Windows ve macOS** için geliştirilmiş bir **güvenli USB sıfırlama** aracıdır. **Gutmann**, **random (rastgele veri yazma)** ve **zeros (sıfırlarla doldurma)** yöntemleri ile **USB flash belleklerdeki verileri güvenli bir şekilde siler** ve FAT32/NTFS olarak yeniden biçimlendirme imkanı sunar.
+Bu proje, **Windows ve macOS** için geliştirilmiş bir **güvenli USB sıfırlama** aracıdır.**random (rastgele veri yazma)** ve **zeros (sıfırlarla doldurma)** yöntemleri ile **USB flash belleklerdeki verileri güvenli bir şekilde siler** ve FAT32/NTFS olarak yeniden biçimlendirme imkanı sunar.
 
 ## 🚀 Özellikler
 - **Bağlı USB sürücülerini listeleme**
